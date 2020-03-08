@@ -5,12 +5,17 @@ import Book from '../model/Book';
 class BookController{
   // create books
   async store(req, res){
-    const {name,year,author,status} = req.body;
+    const {filename} = req.file;
+    const {name,year,status} = req.body;
+    const {author_id} = req.headers;
+
     const book = await Book.create({
+      author: author_id,
+      archive: filename,
       name,
       year,
-      author,
-      status
+      status,
+      author_id
     });
 
     return res.json(book);
@@ -24,17 +29,20 @@ class BookController{
 
   // update book
   async update(req,res){
+    const {filename} = req.file;
+    const {author_id} = req.headers;
     const {book_id} = req.params;
-    const {name,year,author,status} = req.body;
+    const {name,year,status} = req.body;
 
     await Book.updateOne({ _id: book_id},{
+      author: author_id,
+      archive: filename,
       name,
       year,
-      author,
       status
     });
 
-    return res.send();
+    return res.json({message: 'Book successfully changed!'});
   }
 
   // delete book
